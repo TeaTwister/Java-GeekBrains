@@ -2,6 +2,8 @@ import java.util.Arrays;
 
 public class HomeWork {
     public static void main(String[] args) {
+
+
         int[] onesZeroes = new int[10];
         for (int i = 0; i < onesZeroes.length; i++) {
             onesZeroes[i] = (int) (Math.random() * 2);
@@ -45,16 +47,19 @@ public class HomeWork {
         System.out.println();
 
 
-        int[] searchForMaxHere = new int[10];
-        for (int i = 0; i < searchForMaxHere.length; i++) {
-            searchForMaxHere[i] = (int) (Math.random() * 100);
+        int[] searchForMinMaxHere = new int[10];
+        for (int i = 0; i < searchForMinMaxHere.length; i++) {
+            searchForMinMaxHere[i] = (int) (Math.random() * 200 - 100);
         }
-        int max = searchForMaxHere[0];
-        System.out.println(Arrays.toString(searchForMaxHere));
-        for (int candidate : searchForMaxHere) {
+        int max = searchForMinMaxHere[0];
+        int min = searchForMinMaxHere[0];
+        System.out.println(Arrays.toString(searchForMinMaxHere));
+        for (int candidate : searchForMinMaxHere) {
             max = candidate > max ? candidate : max;
+            min = candidate < min ? candidate : min;
+
         }
-        System.out.printf("Maximum is %d%n", max);
+        System.out.printf("Maximum is %d, minimum is %d%n", max, min);
         System.out.println();
 
 
