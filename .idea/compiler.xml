@@ -11,9 +11,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Homework-3" target="1.5" />
-      <module name="Java-GB" target="1.5" />
-      <module name="Java-Level-1" target="1.5" />
+      <module name="Homework-3" target="14" />
+      <module name="Java-GB" target="14" />
+      <module name="Java-Level-1" target="14" />
     </bytecodeTargetLevel>
   </component>
 </project>
