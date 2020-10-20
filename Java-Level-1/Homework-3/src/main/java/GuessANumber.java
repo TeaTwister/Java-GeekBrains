@@ -6,8 +6,7 @@ public class GuessANumber {
         int rangeFrom = 0;
         int rangeTo = 9;
         int maxTries = 3;
-        System.out.printf("Welcome to the game, you need to guess a number from %d to %d!%n",
-                rangeFrom, rangeTo);
+        System.out.printf("Welcome to the game, you need to guess a number from %d to %d!%n", rangeFrom, rangeTo);
         do {
             System.out.println("Good luck!");
             int answer = rangeFrom + (int) (Math.random() * (rangeTo - rangeFrom + 1));
