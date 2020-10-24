@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -11,6 +12,8 @@ public class TicTacToe {
     static char player = X_CHAR;
 
     static int[] lastMove;
+
+    static ArrayList<int[]> computerMoves;
 
     static final Scanner SCANNER = new Scanner(System.in);
 
@@ -76,7 +79,7 @@ public class TicTacToe {
                 move = humanMove();
                 break;
             case O_CHAR:
-                move = humanMove();
+                move = computerMove();
                 break;
         }
         commitMove(move, player);
@@ -170,6 +173,39 @@ public class TicTacToe {
 
     private static void playerChange() {
         player = player == X_CHAR ? O_CHAR : X_CHAR;
+    }
+
+
+    private static int[] computerMove() {
+        computerMoves = new ArrayList<int[]>();
+        possibleInlineMoves();
+        System.out.println(computerMoves);
+        return computerMoves.get(0);
+    }
+
+    private static void possibleInlineMoves() {
+        if (isInDiagonal(lastMove)) findDiagonalMoves();
+        findLinearMoves();
+    }
+
+    private static void findDiagonalMoves() {
+        for (int i = 0; i < fieldSide; i++) {
+            if (field[i][i] == DOT_CHAR) {
+                computerMoves.add(new int[]{i, i});
+            }
+            if (field[i][fieldSide - 1 - i] == DOT_CHAR && !computerMoves.contains(new int[]{i, fieldSide - 1 - i})) {
+                computerMoves.add(new int[]{i, fieldSide - 1 - i});
+            }
+        }
+    }
+
+    private static void findLinearMoves() {
+        int row = lastMove[0];
+        int column = lastMove[1];
+        for (int i = 0; i < fieldSide; i++) {
+            int[] candidate = {row, i};
+            if (field[row][i] == DOT_CHAR && computerMoves.contains(candidate));
+        }
     }
 }
 
