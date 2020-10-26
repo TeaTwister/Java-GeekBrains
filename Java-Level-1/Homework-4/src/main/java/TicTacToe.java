@@ -24,7 +24,7 @@ public class TicTacToe {
             for (moveCount = 0; moveCount < fieldSide * fieldSide; moveCount++) {
                 printField();
                 playerMove(player);
-                if (checkWin()) {
+                if (moveCount >= 4 && checkWin()) {
                     System.out.printf("Player %c wins!", player);
                     break;
                 }
@@ -144,9 +144,15 @@ public class TicTacToe {
     }
 
     private static boolean isInDiagonal(int[] move) {
-        int row = move[0];
-        int column = move[1];
-        return row == column || row == (fieldSide - 1) - column;
+        return isLeftDiagonal(move) || isRightDiagonal(move);
+    }
+
+    private static boolean isLeftDiagonal(int[] move) {
+        return move[0] == move[1];
+    }
+
+    private static boolean isRightDiagonal(int[] move){
+        return move[0] == (fieldSide - 1) - move[1];
     }
     
     private static boolean checkDiagonals() {
@@ -187,18 +193,51 @@ public class TicTacToe {
 
 
     private static int[] computerMove() {
-        if (moveCount == 1) {
-            if (isInCorner(lastMove)) {
-                return opposite(lastMove);
-            }
-        }
         int[] move = new int[2];
-        int priority = 0;
+        int maxPriority = 0;
         for (int[] candidate : availableMoves) {
-
+            int priority = countPriority(candidate);
+            if (priority > maxPriority) {
+                maxPriority = priority;
+                move = candidate;
+            }
         }
         return opposite(lastMove);
     }
+
+    private static int countPriority(int[] move) {
+        int score = 0;
+        if (isLeftDiagonal(move)) {
+            score++;
+            score += countLeftDiagonal();
+        }
+        if (isRightDiagonal(move)) {
+            score++;
+            score += countRightDiagonal();
+        }
+
+    }
+
+    private static int countLeftDiagonal() {
+        int score = 0;
+        for (int i = 0; i < fieldSide; i++) {
+            if (field[i][i] == X_CHAR ) score++;
+            if (field[i][i] == O_CHAR) score--;
+        }
+        if (score == -2) return 4;
+        return Math.abs(score);
+    }
+
+    private static int countRightDiagonal() {
+        int score = 0;
+        for (int i = 0; i < fieldSide; i++) {
+            if (field[i][(fieldSide - 1) - i] == X_CHAR ) score++;
+            if (field[i][(fieldSide - 1) - i] == O_CHAR) score--;
+        }
+        if (score == -2) return 4;
+        return Math.abs(score);
+    }
+
 
     private static boolean isInCorner (int[] move) {
         return move[0] % 2 == 0 && move[1] % 2 == 0;
