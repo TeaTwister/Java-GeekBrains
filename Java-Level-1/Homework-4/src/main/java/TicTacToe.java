@@ -12,30 +12,39 @@ public class TicTacToe {
     static char player = X_CHAR;
 
     static int[] lastMove;
+    static int moveCount;
 
-    static ArrayList<int[]> computerMoves;
+    static ArrayList<int[]> availableMoves = new ArrayList<>(fieldSide * fieldSide);
 
     static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) {
-        emptyField();
         do {
-            printField();
-            playerMove(player);
-            if (checkWin()) {
-                System.out.printf("Player %c wins!", player);
-                break;
+            emptyField();
+            for (moveCount = 0; moveCount < fieldSide * fieldSide; moveCount++) {
+                printField();
+                playerMove(player);
+                if (checkWin()) {
+                    System.out.printf("Player %c wins!", player);
+                    break;
+                }
+                playerChange();
             }
-            playerChange();
+            printField();
+            if (moveCount == fieldSide * fieldSide) {
+                System.out.println("Draw!");
+            }
         } while (true);
     }
 
 
     private static void emptyField() {
         field = new char[fieldSide][fieldSide];
+        availableMoves.clear();
         for (int i = 0; i < fieldSide; i++) {
             for (int j = 0; j < fieldSide; j++) {
                 field[i][j] = DOT_CHAR;
+                availableMoves.add(new int[]{i, j});
             }
         }
     }
@@ -121,6 +130,7 @@ public class TicTacToe {
     public static void commitMove(int[] move, char playerSign) {
         field[move[0]][move[1]] = playerSign;
         lastMove = move;
+        availableMoves.remove(move);
     }
 
     public static boolean checkWin() {
@@ -177,35 +187,29 @@ public class TicTacToe {
 
 
     private static int[] computerMove() {
-        computerMoves = new ArrayList<int[]>();
-        possibleInlineMoves();
-        System.out.println(computerMoves);
-        return computerMoves.get(0);
-    }
-
-    private static void possibleInlineMoves() {
-        if (isInDiagonal(lastMove)) findDiagonalMoves();
-        findLinearMoves();
-    }
-
-    private static void findDiagonalMoves() {
-        for (int i = 0; i < fieldSide; i++) {
-            if (field[i][i] == DOT_CHAR) {
-                computerMoves.add(new int[]{i, i});
-            }
-            if (field[i][fieldSide - 1 - i] == DOT_CHAR && !computerMoves.contains(new int[]{i, fieldSide - 1 - i})) {
-                computerMoves.add(new int[]{i, fieldSide - 1 - i});
+        if (moveCount == 1) {
+            if (isInCorner(lastMove)) {
+                return opposite(lastMove);
             }
         }
+        int[] move = new int[2];
+        int priority = 0;
+        for (int[] candidate : availableMoves) {
+
+        }
+        return opposite(lastMove);
     }
 
-    private static void findLinearMoves() {
-        int row = lastMove[0];
-        int column = lastMove[1];
-        for (int i = 0; i < fieldSide; i++) {
-            int[] candidate = {row, i};
-            if (field[row][i] == DOT_CHAR && computerMoves.contains(candidate));
+    private static boolean isInCorner (int[] move) {
+        return move[0] % 2 == 0 && move[1] % 2 == 0;
+    }
+
+    private static int[] opposite(int[] move) {
+        int[] oppositeMove = new int[2];
+        for (int i = 0; i < move.length; i++) {
+            oppositeMove[i] = fieldSide - 1 - move[i];
         }
+        return oppositeMove;
     }
 }
 
