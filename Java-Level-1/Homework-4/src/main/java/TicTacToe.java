@@ -4,7 +4,8 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class TicTacToe {
-    public static int fieldSide = 3;
+    public static int fieldSide = 5;
+    public static int winCondition = 4;
     static char[][] field;
 
     static final char DOT_CHAR = '•';
@@ -137,17 +138,10 @@ public class TicTacToe {
     }
 
     public static boolean checkWin() {
-        boolean win = false;
-        if (isInDiagonal(lastMove)) {
-            win = checkDiagonals();
-        }
+        boolean win = checkDiagonals(lastMove);
         win = checkRow(lastMove[0]) || win;
         win = checkColumn(lastMove[1]) || win;
         return win;
-    }
-
-    private static boolean isInDiagonal(int[] move) {
-        return isLeftDiagonal(move) || isRightDiagonal(move);
     }
 
     private static boolean isLeftDiagonal(int[] move) {
@@ -158,36 +152,65 @@ public class TicTacToe {
         return move[0] == (fieldSide - 1) - move[1];
     }
     
-    private static boolean checkDiagonals() {
-        boolean flagL = field[0][0] == player;
-        boolean flagR = field[0][fieldSide - 1] == player;
-        if (!(flagL || flagR)) {
-            return false;
-        }
-        for (int i = 0; i < fieldSide; i++) {
-            if (field[i][i] != player) {
-                flagL = false;
+    private static boolean checkDiagonals(int[] move) {
+        int row = move[0];
+        int column = move[1];
+        int leftLength = fieldSide - Math.abs(row - column);
+        int left = 0;
+        int maxLeft = 0;
+        int rightLength = row + column + 1;
+        rightLength = rightLength <= fieldSide ? rightLength : fieldSide - rightLength % fieldSide;
+        int right = 0;
+        int maxRight = 0;
+        if (leftLength >= winCondition) {
+            int rowStart = Math.max(row - column, 0);
+            int columnStart = rowStart == 0 ? column - row : 0;
+            for (int i = 0; i < leftLength; i++) {
+                if (field[rowStart + i][columnStart + i] == player) left++;
+                else {
+                    maxLeft = Math.max(maxLeft, left);
+                    left = 0;
+                }
             }
-            if (field[i][fieldSide - 1 - i] != player) {
-                flagR = false;
-            }
-            if (!(flagL || flagR)) break;
         }
-        return flagL || flagR;
+        if (rightLength >= winCondition) {
+            int rowStart = row + column < fieldSide ? 0 : (row + column + 1) % fieldSide;
+            int columnStart = rowStart == 0 ? row + column : fieldSide - 1;
+            for (int i = 0; i < rightLength; i++) {
+                if (field[rowStart + i][columnStart - i] == player) right++;
+                else {
+                    maxRight = Math.max(maxRight, right);
+                    right = 0;
+                }
+            }
+        }
+        return Math.max(maxLeft, left) >= winCondition || Math.max(maxRight, right) >= winCondition;
     }
 
     private static boolean checkRow(int row) {
+        int score = 0;
+        int maxScore = 0;
         for (int i = 0; i < fieldSide; i++) {
-            if (field[row][i] != player) return false;
+            if (field[row][i] == player) score++;
+            else {
+                maxScore = Math.max(maxScore, score);
+                score = 0;
+            }
         }
-        return true;
+        return Math.max(maxScore, score) >= winCondition;
     }
 
     private static boolean checkColumn(int column) {
+        int score = 0;
+        int maxScore = 0;
         for (int i = 0; i < fieldSide; i++) {
-            if (field[i][column] != player) return false;
+            if (field[i][column] == player) score++;
+            else {
+                maxScore = Math.max(maxScore, score);
+                score = 0;
+            }
         }
-        return true;
+        return Math.max(maxScore, score) >= winCondition;
     }
 
     private static void playerChange() {
@@ -223,8 +246,8 @@ public class TicTacToe {
             if (field[i][i] == X_CHAR ) xCount++;
             if (field[i][i] == O_CHAR) oCount++;
         }
-        if (oCount == fieldSide - 1) return fieldSide * fieldSide * fieldSide;
-        if (xCount == fieldSide - 1) return fieldSide * fieldSide;
+        if (oCount == winCondition - 1) return fieldSide * fieldSide * fieldSide;
+        if (xCount == winCondition - 1) return fieldSide * fieldSide;
         return Math.abs(xCount + oCount);
     }
 
@@ -235,8 +258,8 @@ public class TicTacToe {
             if (field[i][(fieldSide - 1) - i] == X_CHAR) xCount++;
             if (field[i][(fieldSide - 1) - i] == O_CHAR) oCount++;
         }
-        if (oCount == fieldSide - 1) return fieldSide * fieldSide * fieldSide;
-        if (xCount == fieldSide - 1) return fieldSide * fieldSide;
+        if (oCount == winCondition - 1) return fieldSide * fieldSide * fieldSide;
+        if (xCount == winCondition - 1) return fieldSide * fieldSide;
         return xCount + oCount;
     }
 
@@ -253,8 +276,8 @@ public class TicTacToe {
             if (field[i][column] == X_CHAR) colXCount++;
             if (field[i][column] == O_CHAR) colOCount++;
         }
-        if (rowOCount == fieldSide - 1 || colOCount == fieldSide - 1) return fieldSide * fieldSide * fieldSide;
-        if (rowXCount == fieldSide - 1 || colXCount == fieldSide - 1) return fieldSide * fieldSide;
+        if (rowOCount == winCondition - 1 || colOCount == winCondition - 1) return fieldSide * fieldSide * fieldSide;
+        if (rowXCount == winCondition - 1 || colXCount == winCondition - 1) return fieldSide * fieldSide;
         return rowXCount + rowOCount + colXCount + colOCount;
     }
 
