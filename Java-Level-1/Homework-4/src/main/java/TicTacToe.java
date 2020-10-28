@@ -42,7 +42,7 @@ public class TicTacToe {
     }
 
 
-    private static void emptyField() {
+    public static void emptyField() {
         field = new char[fieldSide][fieldSide];
         availableMoves.clear();
         for (int i = 0; i < fieldSide; i++) {
