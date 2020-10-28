@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -9,7 +10,7 @@ public class TicTacToe {
     static final char DOT_CHAR = '•';
     static final char X_CHAR = 'X';
     static final char O_CHAR = 'O';
-    static char player = X_CHAR;
+    static char player;
 
     static int[] lastMove;
     static int moveCount;
@@ -21,11 +22,12 @@ public class TicTacToe {
     public static void main(String[] args) {
         do {
             emptyField();
+            player = X_CHAR;
             for (moveCount = 0; moveCount < fieldSide * fieldSide; moveCount++) {
                 printField();
                 playerMove(player);
-                if (moveCount >= 4 && checkWin()) {
-                    System.out.printf("Player %c wins!", player);
+                if (checkWin()) {
+                    System.out.printf("Player %c wins!%n", player);
                     break;
                 }
                 playerChange();
@@ -34,7 +36,8 @@ public class TicTacToe {
             if (moveCount == fieldSide * fieldSide) {
                 System.out.println("Draw!");
             }
-        } while (true);
+        } while (wannaPlay());
+        SCANNER.close();
     }
 
 
@@ -130,7 +133,7 @@ public class TicTacToe {
     public static void commitMove(int[] move, char playerSign) {
         field[move[0]][move[1]] = playerSign;
         lastMove = move;
-        availableMoves.remove(move);
+        availableMoves.removeIf(cell -> Arrays.equals(cell, move));
     }
 
     public static boolean checkWin() {
@@ -202,53 +205,63 @@ public class TicTacToe {
                 move = candidate;
             }
         }
-        return opposite(lastMove);
+        return move;
     }
 
     private static int countPriority(int[] move) {
         int score = 0;
-        if (isLeftDiagonal(move)) {
-            score++;
-            score += countLeftDiagonal();
-        }
-        if (isRightDiagonal(move)) {
-            score++;
-            score += countRightDiagonal();
-        }
-
+        if (isLeftDiagonal(move)) score += countLeftDiagonal() + 1;
+        if (isRightDiagonal(move)) score += countRightDiagonal() + 1;
+        score += countRowAndColumn(move);
+        return score;
     }
 
     private static int countLeftDiagonal() {
-        int score = 0;
+        int oCount = 0;
+        int xCount = 0;
         for (int i = 0; i < fieldSide; i++) {
-            if (field[i][i] == X_CHAR ) score++;
-            if (field[i][i] == O_CHAR) score--;
+            if (field[i][i] == X_CHAR ) xCount++;
+            if (field[i][i] == O_CHAR) oCount++;
         }
-        if (score == -2) return 4;
-        return Math.abs(score);
+        if (oCount == fieldSide - 1) return fieldSide * fieldSide * fieldSide;
+        if (xCount == fieldSide - 1) return fieldSide * fieldSide;
+        return Math.abs(xCount + oCount);
     }
 
     private static int countRightDiagonal() {
-        int score = 0;
+        int oCount = 0;
+        int xCount = 0;
         for (int i = 0; i < fieldSide; i++) {
-            if (field[i][(fieldSide - 1) - i] == X_CHAR ) score++;
-            if (field[i][(fieldSide - 1) - i] == O_CHAR) score--;
+            if (field[i][(fieldSide - 1) - i] == X_CHAR) xCount++;
+            if (field[i][(fieldSide - 1) - i] == O_CHAR) oCount++;
         }
-        if (score == -2) return 4;
-        return Math.abs(score);
+        if (oCount == fieldSide - 1) return fieldSide * fieldSide * fieldSide;
+        if (xCount == fieldSide - 1) return fieldSide * fieldSide;
+        return xCount + oCount;
+    }
+
+    private static int countRowAndColumn(int[] move) {
+        int row = move[0];
+        int rowXCount = 0;
+        int rowOCount = 0;
+        int column = move[1];
+        int colXCount = 0;
+        int colOCount = 0;
+        for (int i = 0; i < fieldSide; i++) {
+            if (field[row][i] == X_CHAR) rowXCount++;
+            if (field[row][i] == O_CHAR) rowOCount++;
+            if (field[i][column] == X_CHAR) colXCount++;
+            if (field[i][column] == O_CHAR) colOCount++;
+        }
+        if (rowOCount == fieldSide - 1 || colOCount == fieldSide - 1) return fieldSide * fieldSide * fieldSide;
+        if (rowXCount == fieldSide - 1 || colXCount == fieldSide - 1) return fieldSide * fieldSide;
+        return rowXCount + rowOCount + colXCount + colOCount;
     }
 
 
-    private static boolean isInCorner (int[] move) {
-        return move[0] % 2 == 0 && move[1] % 2 == 0;
-    }
-
-    private static int[] opposite(int[] move) {
-        int[] oppositeMove = new int[2];
-        for (int i = 0; i < move.length; i++) {
-            oppositeMove[i] = fieldSide - 1 - move[i];
-        }
-        return oppositeMove;
+    public static boolean wannaPlay() {
+        System.out.print("\nWanna play again? 1 - yes / 0 - no: ");
+        return SCANNER.next().equals("1");
     }
 }
 
