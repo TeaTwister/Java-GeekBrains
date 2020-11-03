@@ -9,7 +9,6 @@ public class ExpressionParser {
 
     static final Pattern VALUES = Pattern.compile("-?[0-9.]+");
     static final Pattern SIGNS = Pattern.compile("[+\\-*/] ");
-    static final Pattern FLAT = Pattern.compile("[0-9.]+.*[0-9.]+|[0-9.]+");
 
     public static Expression parse(String input) {
         ArrayList<Expression> args = new ArrayList<>();
