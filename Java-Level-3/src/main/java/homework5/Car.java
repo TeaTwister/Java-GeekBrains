@@ -5,13 +5,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Car implements Runnable {
     private static final ReentrantLock photoFinish = new ReentrantLock();
-    private static int CARS_COUNT;
     private static CountDownLatch startLine;
     private static CountDownLatch finishLine;
-
-    static {
-        CARS_COUNT = 0;
-    }
+    private static int CARS_COUNT = 0;
 
     private final Race race;
     private final int speed;
